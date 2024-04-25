@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import uniqueValidator from "mongoose-unique-validator";
+import { comparePassword } from "../helpers/authHelpers.js";
 
 const { Schema, model } = mongoose;
 
@@ -49,6 +50,19 @@ const UserSchema = new Schema(
 );
 
 UserSchema.plugin(uniqueValidator, { message: "is already taken." });
+
+UserSchema.statics.logInControl = async function (email, password) {
+  const user = await this.findOne({ email: email });
+  if (!user) {
+    const error = new Error("The email or password entered is incorrect.");
+    error.status = 400;
+    throw error;
+  }
+
+  await comparePassword(password, user.password);
+
+  return user;
+};
 
 const User = model("User", UserSchema);
 export default User;

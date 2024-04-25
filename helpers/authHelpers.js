@@ -16,3 +16,14 @@ export const createToken = (_id) => {
   const token = jwt.sign({ _id }, TOKEN_KEY, { expiresIn: "1d" });
   return token;
 };
+
+export const comparePassword = async (password, storedPassword) => {
+  const mix = password + PEPPER_KEY;
+  const isValidPass = await bcrypt.compare(mix, storedPassword);
+
+  if (!isValidPass) {
+    const error = new Error("The email or password entered is incorrect.");
+    error.status = 401;
+    throw error;
+  }
+};
