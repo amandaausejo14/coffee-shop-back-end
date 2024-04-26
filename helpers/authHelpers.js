@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 dotenv.config();
 const { PEPPER_KEY, TOKEN_KEY } = process.env;
-console.log(TOKEN_KEY, PEPPER_KEY);
 
 export const hashPassword = async (password) => {
   const salt = await bcrypt.genSalt(10);

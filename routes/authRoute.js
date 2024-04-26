@@ -3,6 +3,55 @@ const router = express.Router();
 import User from "../models/userModel.js";
 import { hashPassword, createToken } from "../helpers/authHelpers.js";
 import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
+      callbackURL: "http://localhost:3000/auth/google/callback",
+      passReqToCallback: true,
+    },
+    function (accessToken, refreshToken, profile, done) {
+      User.findOne({ googleId: profile.id }, async (err, existingUser) => {
+        if (err) {
+          return done(err);
+        }
+
+        if (existingUser) {
+          return done(null, existingUser);
+        } else {
+          const newUser = new User({
+            user_name: profile.displayName,
+          });
+
+          try {
+            const savedUser = await newUser.save();
+            return done(null, savedUser);
+          } catch (error) {
+            return done(error);
+          }
+        }
+      });
+    },
+  ),
+);
+
+passport.serializeUser((user, cb) => {
+  cb(null, user.id);
+});
+
+passport.deserializeUser(async (id, cb) => {
+  try {
+    const user = await User.findById(id);
+    cb(null, user);
+  } catch (err) {
+    cb(err);
+  }
+});
+
 // //SIGN UP
 router.post("/signup", async (req, res) => {
   try {
@@ -35,33 +84,32 @@ router.post("/signup", async (req, res) => {
 //google auth
 router.get("/google", passport.authenticate("google", { scope: ["profile"] }));
 
-router.get(
-  "/google",
-  passport.authenticate("google", {
-    successRedirect: "http://localhost:3000/",
-    failureRedirect: "/login/failed",
-  }),
-);
-//failure or success
-router.get("login/success", (req, res) => {
-  if (req.user) {
-    res.status(200).json({
-      success: true,
-      message: "Success",
-      user: req.user,
-      token: token,
-    });
-  }
+router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/login" }), function (req, res) {
+  // Successful authentication, redirect home.
+  res.redirect("/");
 });
 
-router.get("login/failed", (req, res) => {
-  if (req.user) {
-  }
-  res.status(401).json({
-    success: false,
-    message: "Failed to log in",
-  });
-});
+// //failure or success
+// router.get("login/success", (req, res) => {
+//   if (req.user) {
+//     res.status(200).json({
+//       success: true,
+//       message: "Success",
+//       user: req.user,
+//       token: token,
+//     });
+//   }
+// });
+
+// router.get("login/failed", (req, res) => {
+//   if (req.user) {
+//   }
+//   res.status(401).json({
+//     success: false,
+//     message: "Failed to log in",
+//   });
+// });
+
 //LOGIN
 router.post("/login", async (req, res) => {
   try {
