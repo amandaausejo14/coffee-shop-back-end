@@ -7,6 +7,7 @@ import authRoute from "./routes/authRoute.js";
 import userRouter from "./routes/usersRoute.js";
 import passport from "passport";
 import cookieSession from "cookie-session";
+import session from "express-session";
 dotenv.config();
 const { MONGODB_URI } = process.env;
 const PORT = process.env.PORT || 3000;
@@ -17,8 +18,14 @@ const app = express();
 app.use(morgan("dev"));
 app.use(cors({ origin: "*" }));
 app.use(express.json());
-app.use(cookieSession({ name: "session", keys: ["lama"], maxAge: 24 * 60 * 60 * 400 }));
-
+//app.use(cookieSession({ name: "session", keys: ["lama"], maxAge: 24 * 60 * 60 * 400 }));
+app.use(
+  session({
+    secret: "SESSION_SECRET",
+    resave: false,
+    saveUninitialized: true,
+  }),
+);
 //passport
 app.use(passport.initialize());
 app.use(passport.session());

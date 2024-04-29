@@ -12,43 +12,38 @@ passport.use(
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
       callbackURL: "http://localhost:3000/auth/google/callback",
-      passReqToCallback: true,
     },
-    function (accessToken, refreshToken, profile, done) {
-      User.findOne({ googleId: profile.id }, async (err, existingUser) => {
-        if (err) {
-          return done(err);
-        }
-
+    async (accessToken, refreshToken, profile, done) => {
+      console.log(`user profile` + JSON.stringify(profile));
+      try {
+        const existingUser = await User.findOne({ email: profile.emails[0].value });
         if (existingUser) {
           return done(null, existingUser);
-        } else {
-          const newUser = new User({
-            user_name: profile.displayName,
-          });
-
-          try {
-            const savedUser = await newUser.save();
-            return done(null, savedUser);
-          } catch (error) {
-            return done(error);
-          }
         }
-      });
+        const newUser = new User({
+          user_name: profile.displayName,
+          email: profile.emails[0].value,
+          password: "Hello123!!",
+        });
+        await newUser.save();
+        done(null, newUser);
+      } catch (error) {
+        done(error, null);
+      }
     },
   ),
 );
 
-passport.serializeUser((user, cb) => {
-  cb(null, user.id);
+passport.serializeUser((user, done) => {
+  done(null, user.id);
 });
 
-passport.deserializeUser(async (id, cb) => {
+passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
-    cb(null, user);
+    done(null, user);
   } catch (err) {
-    cb(err);
+    done(err);
   }
 });
 
@@ -82,11 +77,29 @@ router.post("/signup", async (req, res) => {
 });
 
 //google auth
-router.get("/google", passport.authenticate("google", { scope: ["profile"] }));
+router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
-router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/login" }), function (req, res) {
-  // Successful authentication, redirect home.
-  res.redirect("/");
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "http://localhost:5173/login-signup" }),
+  function (req, res) {
+    console.log("sono qui");
+    res.redirect("http://localhost:5173");
+  },
+);
+router.get("/dashboard", async (req, res) => {
+  if (!req.user) {
+    return res.redirect("http://localhost:5173/login-signup");
+  }
+  const user = await User.findById(req.user.id);
+  res.render("dashboard", { user });
+});
+
+router.get("/logout", function (req, res) {
+  req.logout(function (err) {
+    if (err) return next(err);
+    res.redirect("http://localhost:5173");
+  });
 });
 
 // //failure or success
@@ -101,13 +114,12 @@ router.get("/google/callback", passport.authenticate("google", { failureRedirect
 //   }
 // });
 
-// router.get("login/failed", (req, res) => {
-//   if (req.user) {
-//   }
+// router.get("/login/failed", (req, res) => {
 //   res.status(401).json({
 //     success: false,
 //     message: "Failed to log in",
 //   });
+//   res.redirect("/");
 // });
 
 //LOGIN
