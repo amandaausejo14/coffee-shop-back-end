@@ -16,7 +16,13 @@ console.log(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
 //impostazioni server
 const app = express();
 app.use(morgan("dev"));
-app.use(cors({ origin: "*" }));
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Replace with your frontend origin
+    credentials: true,
+  }),
+);
+
 app.use(express.json());
 //app.use(cookieSession({ name: "session", keys: ["lama"], maxAge: 24 * 60 * 60 * 400 }));
 app.use(
