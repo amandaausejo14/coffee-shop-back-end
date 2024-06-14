@@ -4,14 +4,14 @@ import User from "../models/userModel.js";
 import { hashPassword, createToken } from "../helpers/authHelpers.js";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
+const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, CALL_BACK_URL } = process.env;
 
 passport.use(
   new GoogleStrategy(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:3000/auth/google/callback",
+      callbackURL: `${CALL_BACK_URL}/auth/google/callback`,
     },
     async (accessToken, refreshToken, profile, done) => {
       console.log(`user profile` + JSON.stringify(profile));
@@ -76,55 +76,9 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// //google auth
-// router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-
-// router.get(
-//   "/google/callback",
-//   passport.authenticate("google", { failureRedirect: "http://localhost:5173/login-signup" }),
-//   function (req, res) {
-//     console.log("sono qui");
-//     res.redirect("http://localhost:5173");
-//   },
-// );
-// router.get("/dashboard", async (req, res) => {
-//   if (!req.user) {
-//     return res.redirect("http://localhost:5173/login-signup");
-//   }
-//   const user = await User.findById(req.user.id);
-//   return res.status(202).json({ user });
-//   // res.render("dashboard", { user });
-// });
-
-// router.get("/logout", function (req, res) {
-//   req.logout(function (err) {
-//     if (err) return next(err);
-//     res.redirect("http://localhost:5173");
-//   });
-//});
-
-// //failure or success
-// router.get("login/success", (req, res) => {
-//   if (req.user) {
-//     res.status(200).json({
-//       success: true,
-//       message: "Success",
-//       user: req.user,
-//       token: token,
-//     });
-//   }
-// });
-
-// router.get("/login/failed", (req, res) => {
-//   res.status(401).json({
-//     success: false,
-//     message: "Failed to log in",
-//   });
-//   res.redirect("/");
-// });
-
 /////////////////////////////////////////////////////////////////////////////////////////
-const CLIENT_URL = "http://localhost:5173/";
+//GOOGLE
+const CLIENT_URL = "http://localhost:5173/" || "https://coffee-shop-omega-coral.vercel.app";
 
 router.get("/login/success", (req, res) => {
   if (req.user) {
@@ -161,7 +115,7 @@ router.get(
     failureRedirect: "/login/failed",
   }),
 );
-
+///////////////////////////////////////////////////////////
 //LOGIN
 router.post("/login", async (req, res) => {
   try {
