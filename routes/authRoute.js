@@ -11,7 +11,7 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: `${CALL_BACK_URL}/auth/google/callback`,
+      callbackURL: `https://coffee-shop-back-end.vercel.app/auth/google/callback`,
     },
     async (accessToken, refreshToken, profile, done) => {
       console.log(`user profile` + JSON.stringify(profile));
