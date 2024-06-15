@@ -103,7 +103,7 @@ router.get("/logout", (req, res) => {
     if (err) {
       return next(err);
     }
-    res.redirect(CLIENT_URL);
+    res.redirect("https://coffee-shop-steel-zeta.vercel.app");
   });
 });
 
@@ -112,7 +112,7 @@ router.get("/google", passport.authenticate("google", { scope: ["profile", "emai
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    successRedirect: CLIENT_URL,
+    successRedirect: "https://coffee-shop-steel-zeta.vercel.app",
     failureRedirect: "/login/failed",
   }),
 );
