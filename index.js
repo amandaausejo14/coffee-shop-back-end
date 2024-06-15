@@ -10,7 +10,6 @@ import session from "express-session";
 dotenv.config();
 const { MONGODB_URI } = process.env;
 const PORT = process.env.PORT || 3000;
-const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
 //impostazioni server
 const app = express();
 app.use(morgan("dev"));
