@@ -11,13 +11,12 @@ dotenv.config();
 const { MONGODB_URI } = process.env;
 const PORT = process.env.PORT || 3000;
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
-console.log(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
 //impostazioni server
 const app = express();
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://coffee-shop-omega-coral.vercel.app"],
+    origin: ["http://localhost:5173", "https://coffee-shop-steel-zeta.vercel.app"],
     credentials: true,
   }),
 );

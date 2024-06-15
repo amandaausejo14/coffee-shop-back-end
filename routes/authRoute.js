@@ -49,6 +49,7 @@ passport.deserializeUser(async (id, done) => {
 
 // //SIGN UP
 router.post("/signup", async (req, res) => {
+  console.log(req);
   try {
     const { email, password, user_name } = req.body;
     console.log(email, password, user_name);
@@ -78,7 +79,7 @@ router.post("/signup", async (req, res) => {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //GOOGLE
-const CLIENT_URL = "http://localhost:5173/" || "https://coffee-shop-omega-coral.vercel.app";
+const CLIENT_URL = "http://localhost:5173/" || "https://coffee-shop-steel-zeta.vercel.app";
 
 router.get("/login/success", (req, res) => {
   if (req.user) {
