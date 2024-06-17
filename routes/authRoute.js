@@ -81,6 +81,7 @@ router.post("/signup", async (req, res) => {
 //GOOGLE
 
 router.get("/login/success", (req, res) => {
+  console.log("sono qui adesso");
   if (req.user) {
     res.status(200).json({
       success: true,
@@ -115,6 +116,8 @@ router.get(
     failureRedirect: "/login/failed",
   }),
 );
+
+
 ///////////////////////////////////////////////////////////
 //LOGIN
 router.post("/login", async (req, res) => {
