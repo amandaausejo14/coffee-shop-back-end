@@ -12,13 +12,18 @@ const ProductShema = new Schema(
       type: Number,
       required: [true, "Price can't be blank"],
     },
-    picture: {
-      type: String,
-      required: [true, "Picture URL can't be blank"],
-    },
     description: {
       type: String,
       required: [true, "Decription can't be blank"],
+    },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: [true, "Category can't be blank"],
+    },
+    image: {
+      type: String,
+      required: [true, "image URL can't be blank"],
     },
   },
   { timestamps: true },

@@ -8,10 +8,19 @@ import userRouter from "./routes/usersRoute.js";
 import productRouter from "./routes/productRoutes.js";
 import passport from "passport";
 import session from "express-session";
+import path from "path";
+import { fileURLToPath } from "url";
+
 dotenv.config();
+
 const { MONGODB_URI, CALL_BACK_URL } = process.env;
 const PORT = process.env.PORT || 3000;
-//impostazioni server
+
+// Define __dirname in ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Server settings
 const app = express();
 app.use(morgan("dev"));
 app.use(
@@ -33,21 +42,23 @@ app.use(
     },
   }),
 );
-//passport
+// to convert the images in static
+app.use("/public/uploads", express.static(path.join(__dirname, "public/uploads")));
+
+// Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-//Routes
+// Routes
 app.use("/auth", authRoute);
 app.use("/users", userRouter);
-app.use("/product", productRouter);
+app.use("/products", productRouter);
 
-//connect server / database
+// Connect server / database
 mongoose
   .connect(MONGODB_URI)
   .then(() => {
-    console.log("Connected to mongoDb");
-    console.log(`${CALL_BACK_URL}/auth/google/callback`);
+    console.log("Connected to MongoDB");
     app.listen(PORT, () => {
       console.log("Server is running!");
       console.log(PORT);
