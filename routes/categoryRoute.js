@@ -34,7 +34,14 @@ router.post("/", async (req, res) => {
   if (!name) {
     return res.status(400).json("You must insert a name for the category");
   }
+
   try {
+    const existingCategory = await Category.findOne({ name: name });
+
+    if (existingCategory) {
+      return res.status(400).json("There is already a category with that name.");
+    }
+
     const newCategoty = new Category({
       name: name,
     });
@@ -72,7 +79,7 @@ router.delete("/:id", async (req, res) => {
   try {
     await Category.findByIdAndDelete(req.params.id);
     res.status(200).json({
-      message: `The Product ID-${req.params.id} was erased from database`,
+      message: `The category ID-${req.params.id} was erased from database`,
     });
   } catch (error) {
     console.error(error.stack);

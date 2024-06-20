@@ -17,7 +17,7 @@ const ProductShema = new Schema(
       required: [true, "Decription can't be blank"],
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Category",
       required: [true, "Category can't be blank"],
     },

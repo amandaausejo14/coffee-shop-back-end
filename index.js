@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import authRoute from "./routes/authRoute.js";
 import userRouter from "./routes/usersRoute.js";
 import productRouter from "./routes/productRoutes.js";
+import categoryRouter from "./routes/categoryRoute.js";
 import passport from "passport";
 import session from "express-session";
 import path from "path";
@@ -53,6 +54,7 @@ app.use(passport.session());
 app.use("/auth", authRoute);
 app.use("/users", userRouter);
 app.use("/products", productRouter);
+app.use("/categories", categoryRouter);
 
 // Connect server / database
 mongoose

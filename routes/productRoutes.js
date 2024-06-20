@@ -64,10 +64,9 @@ router.get("/:id", async (req, res) => {
 
 //post product
 router.post("/", upload.single("image"), async (req, res) => {
-  console.log(req.body);
-  const isValidCategory = await Category.findById(req.params.id);
+  const isValidCategory = await Category.findById(req.body.category);
   if (!isValidCategory) {
-    res.status(404).send(`No category found with the ID-${req.params.id}`);
+    res.status(404).send(`No category found with the ID-${req.body.category}`);
   }
   try {
     const { name, price, description } = req.body;
@@ -77,18 +76,19 @@ router.post("/", upload.single("image"), async (req, res) => {
     }
     //we need the whole http:// adress URL for the front end to be able to see the image
     const fileName = req.file.filename;
-    const basePath = `${req.protocol}://${req.get("host")}/public/upload`;
+    const basePath = `${req.protocol}://${req.get("host")}/public/upload/`;
     const newProduct = new Product({
       name: name,
       price: price,
       description: description,
       image: `${basePath}${fileName}`,
+      category: req.body.category,
     });
     const createdProduct = await newProduct.save();
     return res.status(201).json(createdProduct);
   } catch (error) {
-    console.error(error.stack);
-    res.status(500).json({ message: error.message });
+    console.log(error);
+    res.status(500).json({ message: error });
   }
 });
 
@@ -121,7 +121,7 @@ router.delete("/:id", async (req, res) => {
     res.status(400).send("Invalid product id");
   }
   try {
-    await Post.findByIdAndDelete(req.params.id);
+    await Product.findByIdAndDelete(req.params.id);
     res.status(200).json({
       message: `The Product ID${req.params.id} was erased from database`,
     });
