@@ -44,7 +44,7 @@ app.use(
   }),
 );
 // to convert the images in static
-app.use("/public/uploads", express.static(path.join(__dirname, "public/uploads")));
+app.use("/public/uploads", express.static(path.join(__dirname, "/public/uploads")));
 
 // Passport
 app.use(passport.initialize());

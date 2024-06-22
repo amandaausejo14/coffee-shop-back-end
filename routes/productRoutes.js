@@ -66,24 +66,38 @@ router.get("/:id", async (req, res) => {
 router.post("/", upload.single("image"), async (req, res) => {
   const isValidCategory = await Category.findById(req.body.category);
   if (!isValidCategory) {
-    res.status(404).send(`No category found with the ID-${req.body.category}`);
+    res.status(400).send(`No category found with the ID-${req.body.category}`);
   }
-  try {
-    const { name, price, description } = req.body;
-    const file = req.file;
-    if ((!name, !price, !description, !file)) {
-      return res.status(400).json("You must name, price, description and image file of the product");
+  const { name, price, description, country_of_origin, package_quantity, stock_quantity } = req.body;
+  const file = req.file;
+
+  if ((!name, !price, !description, !file, !country_of_origin, !package_quantity, stock_quantity)) {
+    return res.status(400).json("You must name, price, description and image file of the product");
+  }
+
+  if (package_quantity) {
+    const { value, unit } = JSON.parse(package_quantity);
+    if (typeof value !== "number" || !["G", "KG"].includes(unit)) {
+      return res.status(400).json({ error: "Invalid package quantity" });
     }
+    req.body.package_quantity = { value, unit };
+  }
+
+  try {
     //we need the whole http:// adress URL for the front end to be able to see the image
     const fileName = req.file.filename;
-    const basePath = `${req.protocol}://${req.get("host")}/public/upload/`;
+    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
     const newProduct = new Product({
       name: name,
       price: price,
       description: description,
+      country_of_origin: country_of_origin,
       image: `${basePath}${fileName}`,
       category: req.body.category,
+      package_quantity: package_quantity,
+      stock_quantity: stock_quantity,
     });
+
     const createdProduct = await newProduct.save();
     return res.status(201).json(createdProduct);
   } catch (error) {
@@ -93,26 +107,56 @@ router.post("/", upload.single("image"), async (req, res) => {
 });
 
 //put product
-router.put("/:id", async (req, res) => {
+router.put("/:id", upload.single("image"), async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
-    res.status(400).send("Invalid product id");
+    return res.status(400).send("Invalid product id");
   }
-  const product = await Product.findByIdAndUpdate(
-    req.params.id,
-    {
-      name: req.body.name,
-      price: req.body.price,
-      description: req.body.description,
-      image: req.body.image,
-    },
-    {
+
+  let fileName;
+  let basePath;
+
+  if (req.file) {
+    fileName = req.file.filename;
+    basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+  }
+
+  const updateData = {
+    name: req.body.name,
+    price: req.body.price,
+    description: req.body.description,
+    country_of_origin: req.body.country_of_origin,
+    category: req.body.category,
+    package_quantity: req.body.package_quantity,
+    stock_quantity: req.body.stock_quantity,
+  };
+
+  // Validate the package_quantity
+  if (updateData.package_quantity) {
+    const { value, unit } = updateData.package_quantity;
+    if (typeof value !== "number" || !["G", "KG"].includes(unit)) {
+      return res.status(400).json({ error: "Invalid package quantity" });
+    }
+  }
+
+  if (fileName && basePath) {
+    updateData.image = `${basePath}${fileName}`;
+  }
+
+  try {
+    const product = await Product.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
-    },
-  );
-  if (!product) {
-    return res.status(500).send("Product cant be updated");
+      runValidators: true,
+    });
+
+    if (!product) {
+      return res.status(500).send("Product can't be updated");
+    }
+
+    res.send(product);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
   }
-  res.send(product);
 });
 
 //delete the product
