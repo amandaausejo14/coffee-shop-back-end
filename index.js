@@ -7,6 +7,7 @@ import authRoute from "./routes/authRoute.js";
 import userRouter from "./routes/usersRoute.js";
 import productRouter from "./routes/productRoutes.js";
 import categoryRouter from "./routes/categoryRoute.js";
+import cookieSession from "cookie-session";
 import passport from "passport";
 import session from "express-session";
 import path from "path";
@@ -14,7 +15,7 @@ import { fileURLToPath } from "url";
 
 dotenv.config();
 
-const { MONGODB_URI, CALL_BACK_URL } = process.env;
+const { MONGODB_URI, CALL_BACK_URL, SESSION_SECRET } = process.env;
 const PORT = process.env.PORT || 3000;
 
 // Define __dirname in ES module
@@ -24,6 +25,7 @@ const __dirname = path.dirname(__filename);
 // Server settings
 const app = express();
 app.use(morgan("dev"));
+
 app.use(
   cors({
     origin: ["http://localhost:5173", "https://coffee-shop-steel-zeta.vercel.app"],
@@ -32,14 +34,15 @@ app.use(
 );
 
 app.use(express.json());
+
 app.use(
   session({
-    secret: "SESSION_SECRET",
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
       sameSite: "None",
-      secure: true,
+      secure: false,
     },
   }),
 );

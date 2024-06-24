@@ -26,3 +26,22 @@ export const comparePassword = async (password, storedPassword) => {
     throw error;
   }
 };
+
+export const controlAuthorization = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    return res.status(401).send(`Token needed`);
+  }
+  if (token) {
+    jwt.verify(token, TOKEN_KEY, (err, user) => {
+      if (err) {
+        return res.status(403).send(`Invalid token`);
+      }
+      req.user = user;
+      next();
+    });
+  } else {
+    console.error(error);
+    return res.status(403).send(`Request not authorized`);
+  }
+};
