@@ -1,7 +1,6 @@
 import express from "express";
 import Category from "../models/categoryModel.js";
 const router = express.Router();
-import mongoose from "mongoose";
 
 //get all categories
 router.get("/", async (req, res) => {

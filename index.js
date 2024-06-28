@@ -7,7 +7,8 @@ import authRoute from "./routes/authRoute.js";
 import userRouter from "./routes/usersRoute.js";
 import productRouter from "./routes/productRoutes.js";
 import categoryRouter from "./routes/categoryRoute.js";
-import cookieSession from "cookie-session";
+import orderRouter from "./routes/orderRoute.js";
+//import orderItemRouter from "./routes/orderItemRoutes.js";
 import passport from "passport";
 import session from "express-session";
 import path from "path";
@@ -58,6 +59,8 @@ app.use("/auth", authRoute);
 app.use("/users", userRouter);
 app.use("/products", productRouter);
 app.use("/categories", categoryRouter);
+app.use("/orders", orderRouter);
+//app.use("/orderItems", orderItemRouter);
 
 // Connect server / database
 mongoose
