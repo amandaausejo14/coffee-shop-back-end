@@ -2,6 +2,7 @@ import express from "express";
 import Order from "../models/orderModel.js";
 const router = express.Router();
 import OrderItem from "../models/orderItemModel.js";
+import Product from "../models/productModel.js";
 import { controlAuthorization } from "../helpers/authHelpers.js";
 //get all orders
 router.get("/", async (req, res) => {
@@ -115,3 +116,27 @@ router.delete("/:id", controlAuthorization, async (req, res) => {
   }
 });
 export default router;
+
+//get just order price
+
+router.post("/getorderprice", async (req, res) => {
+  try {
+    const orderItems = req.body.orderItems;
+    const totalPrices = await Promise.all(
+      orderItems.map(async (item) => {
+        const product = await Product.findById(item.product);
+
+        if (!product) {
+          throw new Error(`Product with ID ${item.product} not found`);
+        }
+        const totalPrice = product.price * item.quantity;
+        return totalPrice;
+      }),
+    );
+    const totalPrice = totalPrices.reduce((a, b) => a + b, 0);
+    return res.status(200).json(totalPrice);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+});

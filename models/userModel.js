@@ -45,30 +45,6 @@ const UserSchema = new Schema(
           "Password must have at least:  8 characters, 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.",
       },
     },
-    phone_number: {
-      type: String,
-      default: "",
-    },
-    street: {
-      type: String,
-      default: "",
-    },
-    house_number: {
-      type: String,
-      default: "",
-    },
-    city: {
-      type: String,
-      default: "",
-    },
-    zip: {
-      type: String,
-      default: "",
-    },
-    country: {
-      type: String,
-      default: "",
-    },
   },
   { timestamps: true },
 );
