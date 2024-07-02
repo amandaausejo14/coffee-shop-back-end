@@ -115,7 +115,6 @@ router.delete("/:id", controlAuthorization, async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-export default router;
 
 //get just order price
 
@@ -140,3 +139,5 @@ router.post("/getorderprice", async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 });
+
+export default router;

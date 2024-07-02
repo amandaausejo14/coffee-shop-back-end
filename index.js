@@ -9,6 +9,7 @@ import productRouter from "./routes/productRoutes.js";
 import categoryRouter from "./routes/categoryRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 //import orderItemRouter from "./routes/orderItemRoutes.js";
+import stripeRouter from "./routes/stripeRoute.js";
 import passport from "passport";
 import session from "express-session";
 import path from "path";
@@ -18,7 +19,6 @@ dotenv.config();
 
 const { MONGODB_URI, CALL_BACK_URL, SESSION_SECRET } = process.env;
 const PORT = process.env.PORT || 3000;
-
 // Define __dirname in ES module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,6 +60,7 @@ app.use("/users", userRouter);
 app.use("/products", productRouter);
 app.use("/categories", categoryRouter);
 app.use("/orders", orderRouter);
+app.use("/stripe", stripeRouter);
 //app.use("/orderItems", orderItemRouter);
 
 // Connect server / database
