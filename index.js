@@ -29,12 +29,10 @@ app.use(morgan("dev"));
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://coffee-shop-steel-zeta.vercel.app"],
+    origin: ["http://localhost:5173", "https://coffee-south.vercel.app"],
     credentials: true,
   }),
 );
-
-app.use(express.json());
 
 app.use(
   session({
@@ -53,6 +51,9 @@ app.use("/public/uploads", express.static(path.join(__dirname, "/public/uploads"
 // Passport
 app.use(passport.initialize());
 app.use(passport.session());
+//route of stripe webhook, no need to parse json, requires raw body
+app.post("/stripe/webhook", express.raw({ type: "application/json" }), stripeRouter);
+app.use(express.json());
 
 // Routes
 app.use("/auth", authRoute);
@@ -61,8 +62,6 @@ app.use("/products", productRouter);
 app.use("/categories", categoryRouter);
 app.use("/orders", orderRouter);
 app.use("/stripe", stripeRouter);
-//app.use("/orderItems", orderItemRouter);
-
 // Connect server / database
 mongoose
   .connect(MONGODB_URI)
