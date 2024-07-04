@@ -2,6 +2,7 @@ import express from "express";
 import Product from "../models/productModel.js";
 const router = express.Router();
 import mongoose from "mongoose";
+import path from "path";
 import multer from "multer";
 import Category from "../models/categoryModel.js";
 
@@ -10,26 +11,24 @@ const FILE_TYPE_MAP = {
   "image/jpeg": "jpeg",
   "image/jpg": "jpg",
 };
-
+console.log(FILE_TYPE_MAP);
 // to store all the img in our database
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const isValid = FILE_TYPE_MAP[file.mimetype];
-    console.log(`isvA` + isValid);
+    console.log(file.mimetype);
     let uploadError = new Error("Invalid image type");
 
     if (isValid) {
       uploadError = null;
     }
-    cb(uploadError, "public/uploads");
+    cb(uploadError, "public/uploads/");
   },
   filename: function (req, file, cb) {
-    //making the name of the file unique
-    //  console.log(file);
-    const fileName = file.originalname.replace(/ /g, "-");
-    // console.log(`filename` + fileName);
-    const extension = FILE_TYPE_MAP[file.mimetype]; //watched what is the image type and checks if its present inside the file type map
-    cb(null, `${fileName}-${Date.now()}.${extension}`);
+    const extension = FILE_TYPE_MAP[file.mimetype];
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const fileName = path.parse(file.originalname).name;
+    cb(null, `${uniqueSuffix}-${fileName}.${extension}`);
   },
 });
 
@@ -86,7 +85,7 @@ router.post("/", upload.single("image"), async (req, res) => {
   try {
     //we need the whole http:// adress URL for the front end to be able to see the image
     const fileName = req.file.filename;
-    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+    const basePath = `https://coffee-shop-back-end.vercel.app/public/uploads/`;
     const newProduct = new Product({
       name: name,
       price: price,
@@ -117,7 +116,7 @@ router.put("/:id", upload.single("image"), async (req, res) => {
 
   if (req.file) {
     fileName = req.file.filename;
-    basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+    basePath = `https://coffee-shop-back-end.vercel.app/public/uploads/`;
   }
 
   const updateData = {

@@ -4,54 +4,31 @@ const { Schema, model } = mongoose;
 
 const OrderShema = new Schema(
   {
+    userId: {
+      type: String,
+      required: true,
+    },
     orderItems: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "OrderItem",
-        required: true,
+        id: { type: String },
+        quantity: { type: Number },
       },
     ],
-    phone_number: {
-      type: String,
-      default: "",
-      required: [true, "Name can't be blank"],
+    totalPrice: {
+      type: Number,
     },
-    street: {
-      type: String,
-      default: "",
-      required: [true, "Name can't be blank"],
+    shipping_info: {
+      type: Object,
+      required: [true],
     },
-    house_number: {
-      type: String,
-      default: "",
-      required: [true, "Name can't be blank"],
-    },
-    city: {
-      type: String,
-      default: "",
-      required: [true, "Name can't be blank"],
-    },
-    zip: {
-      type: String,
-      default: "",
-      required: [true, "Name can't be blank"],
-    },
-    country: {
-      type: String,
-      default: "",
-      required: [true, "Name can't be blank"],
-    },
-    status: {
+    delivery_status: {
       type: String,
       required: true,
       default: "Pending",
     },
-    totalPrice: {
-      type: Number,
-    },
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+    payment_status: {
+      type: String,
+      required: true,
     },
   },
   { timestamps: true },
