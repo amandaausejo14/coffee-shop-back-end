@@ -6,11 +6,15 @@ const { CLIENT_URL, STRIPE_KEY, END_POINT_SECRET } = process.env;
 const stripe = Stripe(STRIPE_KEY);
 
 router.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://coffee-south.vercel.app");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, OPTIONS, DELETE");
   next();
+});
+
+router.options("*", (req, res) => {
+  res.sendStatus(200); // Respond to preflight requests
 });
 
 router.post("/create-checkout-session", async (req, res) => {
