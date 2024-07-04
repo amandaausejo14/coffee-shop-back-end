@@ -8,7 +8,6 @@ import userRouter from "./routes/usersRoute.js";
 import productRouter from "./routes/productRoutes.js";
 import categoryRouter from "./routes/categoryRoute.js";
 import orderRouter from "./routes/orderRoute.js";
-//import orderItemRouter from "./routes/orderItemRoutes.js";
 import stripeRouter from "./routes/stripeRoute.js";
 import passport from "passport";
 import session from "express-session";

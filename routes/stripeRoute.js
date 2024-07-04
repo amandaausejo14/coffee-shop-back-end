@@ -5,6 +5,14 @@ const router = express.Router();
 const { CLIENT_URL, STRIPE_KEY, END_POINT_SECRET } = process.env;
 const stripe = Stripe(STRIPE_KEY);
 
+router.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://coffee-south.vercel.app");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  next();
+});
+
 router.post("/create-checkout-session", async (req, res) => {
   const customer = await stripe.customers.create({
     metadata: {
