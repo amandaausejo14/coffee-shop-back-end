@@ -5,19 +5,22 @@ const router = express.Router();
 const { CLIENT_URL, STRIPE_KEY, END_POINT_SECRET } = process.env;
 const stripe = Stripe(STRIPE_KEY);
 
-router.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, OPTIONS, DELETE");
-  next();
-});
+// router.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+//   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//   res.setHeader("Access-Control-Allow-Credentials", true);
+//   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, OPTIONS, DELETE");
+//   next();
+// });
 
-router.options("*", (req, res) => {
-  res.sendStatus(200); // Respond to preflight requests
-});
+// router.options("*", (req, res) => {
+//   res.sendStatus(200); // Respond to preflight requests
+// });
 
 router.post("/create-checkout-session", async (req, res) => {
+  console.log("res " + res);
+  console.log("req " + req);
+  console.log("req.body " + req.body);
   const customer = await stripe.customers.create({
     metadata: {
       userId: req.body.userId,
