@@ -44,6 +44,10 @@ app.use(
     },
   }),
 );
+
+// Middleware to parse JSON and URL-encoded data
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 // to convert the images in static
 app.use("/public/uploads", express.static(path.join(__dirname, "/public/uploads")));
 
@@ -52,7 +56,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 //route of stripe webhook, no need to parse json, requires raw body
 app.post("/stripe/webhook", express.raw({ type: "application/json" }), stripeRouter);
-app.use(express.json());
 
 // Routes
 app.use("/auth", authRoute);
