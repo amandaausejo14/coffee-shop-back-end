@@ -19,8 +19,8 @@ dotenv.config();
 const { MONGODB_URI, CALL_BACK_URL, SESSION_SECRET } = process.env;
 const PORT = process.env.PORT || 3000;
 
-//const __filename = fileURLToPath(import.meta.url);
-//const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Server settings
 const app = express();
@@ -49,7 +49,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // to convert the images in static
-app.use("/public/uploads", express.static("/public/uploads"));
+app.use("/public/uploads", express.static(path.join(__dirname, "/public/uploads")));
 
 // Passport
 app.use(passport.initialize());
